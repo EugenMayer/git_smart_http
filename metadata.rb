@@ -1,0 +1,7 @@
+maintainer       "KontextWork GmbH"
+maintainer_email "eugen.mayer@kontextwork.de"
+license          "All rights reserved"
+description      "Apache Smart HTTP git reciepe"
+version          "0.1.2"
+depends           "openssl"
+depends           "apache2"

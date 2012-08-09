@@ -1,0 +1,37 @@
+<VirtualHost <%= node[:git_smart_http][:domain] %>:443>
+  ServerName <%= node[:git_smart_http][:domain] %>
+  DocumentRoot <%= node[:git_smart_http][:gitroot] %>
+  SSLEngine on
+  SSLCertificateFile    /etc/ssl/certs/ssl-cert-snakeoil.pem
+  SSLCertificateKeyFile /etc/ssl/private/ssl-cert-snakeoil.key
+
+  <Directory />
+      Options FollowSymLinks
+      AllowOverride All
+  </Directory>
+
+  <Directory /usr/lib/git-core>
+      AllowOverride None
+      Options +ExecCGI -Includes
+      Order allow,deny
+      Allow from all
+  </Directory>
+
+  ScriptAlias /git/ /usr/lib/git-core/git-http-backend/
+  SetEnv GIT_PROJECT_ROOT <%= node[:git_smart_http][:gitroot] %>
+  SetEnv GIT_HTTP_EXPORT_ALL
+
+
+  <% @repos.each do |reponame,settings| %>
+  #########  entry for repo <%= reponame%> ######
+  <LocationMatch "/<%= reponame%>">
+    AuthType Basic
+    AuthUserFile <%= @passwords_root %>/<%= reponame %>
+    AuthName "<%= reponame%> Access"
+    Require valid-user
+  </LocationMatch>
+  ######### END ###############
+
+  <% end %>
+
+</VirtualHost>
