@@ -67,7 +67,7 @@ end
 include_recipe "apache2::mod_cgi"
 
 
-template "/etc/apache2/conf.d/gitsmarthttp_conf.conf" do
+template "/etc/apache2/conf.d/git_smart_http.conf" do
   source "git_smart_http_conf.erb"
   variables(
       :repos => node[:git_smart_http][:repos],
