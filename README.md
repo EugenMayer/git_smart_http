@@ -1,4 +1,6 @@
 Cookbook for deploying smart-http git configurations
+===========
+
 * support multiple repos with different auth-files
 * calls git hooks properly
 * supports repos defined by other reciepes
@@ -14,32 +16,37 @@ Dependencies
 
 Usage
 ------------
+
 To add a repo to a node (or several), just add the git_smart_http::default reciepe and the following vars to your node
-<blockquote>
-node[:gitsmarthttp][:domain]='gitserver.domain.tld'
-node[:gitsmarthttp][:repos][:myrepo1][:username] = 'foo1'
-node[:gitsmarthttp][:repos][:myrepo2][:username] = 'foo2'
-node[:gitsmarthttp][:repos][:myrepo3][:username] = 'foo2'
-(this is optional, defautls are given/generated)
+
+```ruby
+node[:git_smart_http][:domain]='gitserver.domain.tld'
+# this creates/provides a bare repo under /var/git/myrepo1
+node[:git_smart_http][:repos][:myrepo1][:username] = 'foo1'
+node[:git_smart_http][:repos][:myrepo2][:username] = 'foo2'
+node[:git_smart_http][:repos][:myrepo3][:username] = 'foo2'
+## (this is optional, defautls are given/generated)
+# this way you set the base dir
 node[:gitsmarthttp][:gitroot]='/var/git/'
-node[:gitsmarthttp][:repos][:myrepo1][:password] = 'secret1'
-node[:gitsmarthttp][:repos][:myrepo2][:password] = 'secret2'
-node[:gitsmarthttp][:repos][:myrepo3][:password] = 'secret3'
-</blockquote>
+# this way you set the password, otherwise it is generated
+node[:git_smart_http][:repos][:myrepo1][:password] = 'secret1'
+node[:git_smart_http][:repos][:myrepo2][:password] = 'secret2'
+node[:git_smart_http][:repos][:myrepo3][:password] = 'secret3'
+```
 
 Hooks
 ------------
 
 If you want to deploy hooks, just write your own reciepe looking like this
-<blockquote>
-node[:gitsmarthttp][:repos][:themer] = {}
-node[:gitsmarthttp][:repos][:themer][:username] = "themer"
-node[:gitsmarthttp][:repos][:themer][:password] = secure_password
+```ruby
+node[:git_smart_http][:repos][:themer] = {}
+node[:git_smart_http][:repos][:themer][:username] = "themer"
+node[:git_smart_http][:repos][:themer][:password] = secure_password
 
-include_recipe "gitsmarthttp::default"
+include_recipe "git_smart_http::default"
 live_wc="/var/www/live"
 stage_wc="/var/www/stage"
-template "#{node[:gitsmarthttp][:repos][:themer][:path]}/hooks/post-receive" do
+template "#{node[:git_smart_http][:repos][:themer][:path]}/hooks/post-receive" do
   source "themer_git_recieve_hook.erb"
   mode "0770"
   variables(
@@ -49,7 +56,7 @@ template "#{node[:gitsmarthttp][:repos][:themer][:path]}/hooks/post-receive" do
   owner 'www-data'
   group 'www-data'
 end
-</blockquote>
+```
 
 This basically deploys the default receive hook for auto-deploying the git repo to live/stage
 after the changes are pushed. Often called git deploy
